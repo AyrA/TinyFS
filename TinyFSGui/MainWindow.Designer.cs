@@ -43,6 +43,10 @@
             SetEncryptionToolStripMenuItem = new ToolStripMenuItem();
             OptimizeCompressionToolStripMenuItem = new ToolStripMenuItem();
             CaseInsensitiveModeToolStripMenuItem = new ToolStripMenuItem();
+            HelpToolStripMenuItem = new ToolStripMenuItem();
+            OpenWebsiteToolStripMenuItem = new ToolStripMenuItem();
+            DocumentationToolStripMenuItem = new ToolStripMenuItem();
+            AboutToolStripMenuItem = new ToolStripMenuItem();
             LvContents = new ListView();
             ChFileName = new ColumnHeader();
             ChSize = new ColumnHeader();
@@ -53,10 +57,6 @@
             RenameToolStripMenuItem = new ToolStripMenuItem();
             EnableCompressionToolStripMenuItem = new ToolStripMenuItem();
             DeleteFileToolStripMenuItem = new ToolStripMenuItem();
-            HelpToolStripMenuItem = new ToolStripMenuItem();
-            OpenWebsiteToolStripMenuItem = new ToolStripMenuItem();
-            AboutToolStripMenuItem = new ToolStripMenuItem();
-            DocumentationToolStripMenuItem = new ToolStripMenuItem();
             MainMenu.SuspendLayout();
             CmsList.SuspendLayout();
             SuspendLayout();
@@ -166,6 +166,35 @@
             CaseInsensitiveModeToolStripMenuItem.Text = "Case &Insensitive mode";
             CaseInsensitiveModeToolStripMenuItem.Click += CaseInsensitiveModeToolStripMenuItem_Click;
             // 
+            // HelpToolStripMenuItem
+            // 
+            HelpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OpenWebsiteToolStripMenuItem, DocumentationToolStripMenuItem, AboutToolStripMenuItem });
+            HelpToolStripMenuItem.Name = "HelpToolStripMenuItem";
+            HelpToolStripMenuItem.Size = new Size(41, 20);
+            HelpToolStripMenuItem.Text = "&Help";
+            // 
+            // OpenWebsiteToolStripMenuItem
+            // 
+            OpenWebsiteToolStripMenuItem.Name = "OpenWebsiteToolStripMenuItem";
+            OpenWebsiteToolStripMenuItem.Size = new Size(180, 22);
+            OpenWebsiteToolStripMenuItem.Text = "&Open Website";
+            OpenWebsiteToolStripMenuItem.Click += OpenWebsiteToolStripMenuItem_Click;
+            // 
+            // DocumentationToolStripMenuItem
+            // 
+            DocumentationToolStripMenuItem.Name = "DocumentationToolStripMenuItem";
+            DocumentationToolStripMenuItem.ShortcutKeys = Keys.F1;
+            DocumentationToolStripMenuItem.Size = new Size(180, 22);
+            DocumentationToolStripMenuItem.Text = "&Documentation";
+            DocumentationToolStripMenuItem.Click += DocumentationToolStripMenuItem_Click;
+            // 
+            // AboutToolStripMenuItem
+            // 
+            AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
+            AboutToolStripMenuItem.Size = new Size(180, 22);
+            AboutToolStripMenuItem.Text = "&About";
+            AboutToolStripMenuItem.Click += AboutToolStripMenuItem_Click;
+            // 
             // LvContents
             // 
             LvContents.AllowDrop = true;
@@ -244,33 +273,6 @@
             DeleteFileToolStripMenuItem.Size = new Size(183, 22);
             DeleteFileToolStripMenuItem.Text = "Delete";
             DeleteFileToolStripMenuItem.Click += DeleteFileToolStripMenuItem_Click;
-            // 
-            // HelpToolStripMenuItem
-            // 
-            HelpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { OpenWebsiteToolStripMenuItem, DocumentationToolStripMenuItem, AboutToolStripMenuItem });
-            HelpToolStripMenuItem.Name = "HelpToolStripMenuItem";
-            HelpToolStripMenuItem.Size = new Size(41, 20);
-            HelpToolStripMenuItem.Text = "&Help";
-            // 
-            // OpenWebsiteToolStripMenuItem
-            // 
-            OpenWebsiteToolStripMenuItem.Name = "OpenWebsiteToolStripMenuItem";
-            OpenWebsiteToolStripMenuItem.Size = new Size(180, 22);
-            OpenWebsiteToolStripMenuItem.Text = "&Open Website";
-            // 
-            // AboutToolStripMenuItem
-            // 
-            AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
-            AboutToolStripMenuItem.Size = new Size(180, 22);
-            AboutToolStripMenuItem.Text = "&About";
-            AboutToolStripMenuItem.Click += AboutToolStripMenuItem_Click;
-            // 
-            // DocumentationToolStripMenuItem
-            // 
-            DocumentationToolStripMenuItem.Name = "DocumentationToolStripMenuItem";
-            DocumentationToolStripMenuItem.ShortcutKeyDisplayString = "F1";
-            DocumentationToolStripMenuItem.Size = new Size(180, 22);
-            DocumentationToolStripMenuItem.Text = "&Documentation";
             // 
             // MainWindow
             // 

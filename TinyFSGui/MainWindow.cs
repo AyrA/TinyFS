@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using TinyFSLib;
 
@@ -893,6 +894,52 @@ namespace TinyFSGui
         {
             using var dlg = new AboutWindow();
             dlg.ShowDialog();
+        }
+
+        private void OpenWebsiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            const string URL = "https://github.com/AyrA/TinyFS";
+            try
+            {
+                var p = Process.Start(new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = URL
+                }) ?? throw new Exception();
+                p.Dispose();
+            }
+            catch
+            {
+                var result = Tools.BoxErr("Unable to open your web browser. Copy the URL to the clipboard instead?", buttons: MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetText(URL);
+                }
+            }
+        }
+
+        private void DocumentationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            const string URL = "https://help.ayra.ch/tinyfs";
+            try
+            {
+                var p = Process.Start(new ProcessStartInfo()
+                {
+                    UseShellExecute = true,
+                    FileName = URL
+                }) ?? throw new Exception();
+                p.Dispose();
+            }
+            catch
+            {
+                var result = Tools.BoxErr("Unable to open your web browser. Copy the URL to the clipboard instead?", buttons: MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    Clipboard.Clear();
+                    Clipboard.SetText(URL);
+                }
+            }
         }
 
         #endregion
