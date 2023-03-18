@@ -47,6 +47,7 @@ namespace TinyFSGui
         private void PopulateList(bool reselect)
         {
             var indexes = LvContents.SelectedIndices.OfType<int>().ToArray();
+            var focused = LvContents.FocusedItem?.Text;
             LvContents.Items.Clear();
             if (currentFile == null)
             {
@@ -83,6 +84,10 @@ namespace TinyFSGui
                     .Select(m => m >= 0x20 ? m : (byte)'.')
                     .ToArray();
                 item.SubItems.Add(Encoding.UTF8.GetString(preview));
+                if (focused != null && focused == item.Text)
+                {
+                    item.Focused = true;
+                }
             }
             if (reselect)
             {
@@ -228,7 +233,7 @@ namespace TinyFSGui
                 Tools.BoxErr("You cannot delete the last file of a container. Delete the container itself instead");
                 return;
             }
-            var btn = Tools.BoxWarn($"Delete {indexes.Length} files", buttons: MessageBoxButtons.YesNo);
+            var btn = Tools.BoxWarn($"Delete {indexes.Length} files?", buttons: MessageBoxButtons.YesNo);
             if (btn == DialogResult.Yes)
             {
                 var names = indexes.Select(m => LvContents.Items[m].Text).ToArray();
@@ -322,8 +327,15 @@ namespace TinyFSGui
                 }
                 else
                 {
-                    change |= f.IsCompressed;
-                    f.IsCompressed = false;
+                    if (f.Data.Length > FileData.MaxDataSize)
+                    {
+                        Tools.BoxWarn($"Cannot disable compression of '{name}' because it would exceed the allowed data size");
+                    }
+                    else
+                    {
+                        change |= f.IsCompressed;
+                        f.IsCompressed = false;
+                    }
                 }
             }
             if (change)
@@ -345,13 +357,8 @@ namespace TinyFSGui
             try
             {
                 using var fs = File.OpenRead(fullName);
-                if (fs.Length > FileData.MaxDataSize)
-                {
-                    throw new Exception($"File too big. Can be at most {FileData.MaxDataSize} bytes");
-                }
-                byte[] data = new byte[fs.Length];
-                fs.Read(data, 0, data.Length);
-                currentFile.SetFile(name, data);
+                var data = Compression.CompressTiny(fs);
+                currentFile.SetFile(name, Compression.Decompress(data));
                 hasChanges = true;
                 return true;
             }
@@ -463,7 +470,10 @@ namespace TinyFSGui
                 bool added = false;
                 foreach (var filename in data)
                 {
-                    added |= AddFile(filename);
+                    if (File.Exists(filename))
+                    {
+                        added |= AddFile(filename);
+                    }
                 }
                 if (added)
                 {
@@ -628,6 +638,8 @@ namespace TinyFSGui
                 default:
                     break;
             }
+            LvContents.Select();
+            LvContents.Focus();
         }
 
         private void LvContents_AfterLabelEdit(object sender, LabelEditEventArgs e)

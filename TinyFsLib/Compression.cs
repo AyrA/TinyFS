@@ -84,5 +84,67 @@ namespace TinyFSLib
             compressor.CopyTo(dataOut);
             return dataOut.ToArray();
         }
+
+        /// <summary>
+        /// Compress a stream of data with respect to TinyFS size limitations
+        /// </summary>
+        /// <param name="s">Data stream</param>
+        /// <returns>Compressed data</returns>
+        /// <exception cref="ArgumentException">Compressed data size exceeds TinyFS specs</exception>
+        public static byte[] CompressTiny(Stream s)
+        {
+            using var MS = new MemoryStream();
+            using var c = new GZipStream(MS, CompressionLevel.Optimal);
+            while (true)
+            {
+                byte[] data = new byte[ushort.MaxValue + 1];
+                int read = s.Read(data, 0, data.Length);
+                if (read > 0)
+                {
+                    c.Write(data, 0, read);
+                    if (MS.Length > ushort.MaxValue)
+                    {
+                        throw new ArgumentException("Compressed data size exceeds TinyFS specs");
+                    }
+                }
+                else
+                {
+                    c.Flush();
+                    c.Close();
+                    var ret = MS.ToArray();
+                    if (ret.Length > ushort.MaxValue)
+                    {
+                        throw new ArgumentException("Compressed data size exceeds TinyFS specs");
+                    }
+                    return ret;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Decompresses a stream of data with respect to TinyFS size limitations
+        /// </summary>
+        /// <param name="s">Compressed data</param>
+        /// <returns>Decompressed data</returns>
+        /// <exception cref="ArgumentException">Compressed data size exceeds TinyFS specs</exception>
+        public static byte[] DecompressTiny(Stream s)
+        {
+            using var MS = new MemoryStream();
+            while (true)
+            {
+                byte[] data = new byte[ushort.MaxValue + 1];
+                int read = s.Read(data, 0, data.Length);
+                if (read == 0)
+                {
+                    break;
+                }
+                MS.Write(data, 0, read);
+                if (MS.Length > ushort.MaxValue)
+                {
+                    throw new ArgumentException("Compressed data size exceeds TinyFS specs");
+                }
+            }
+            return Decompress(MS.ToArray());
+        }
     }
 }

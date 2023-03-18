@@ -395,6 +395,7 @@ namespace TinyFSLib
         /// <exception cref="ArgumentNullException"><paramref name="fileData"/> is null</exception>
         public FileData SetFile(string name, byte[] fileData)
         {
+            bool forceCompression = false;
             if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
@@ -410,7 +411,11 @@ namespace TinyFSLib
             }
             if (fileData.Length > ushort.MaxValue)
             {
-                throw new ArgumentOutOfRangeException(nameof(fileData), $"Data length can be at most {ushort.MaxValue} bytes");
+                if (Compression.Compress(fileData).Length > ushort.MaxValue)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(fileData), $"Data length can be at most {ushort.MaxValue} bytes");
+                }
+                forceCompression = true;
             }
 
             var data = filesystem.FirstOrDefault(m => CompareName(m.Name, name));
@@ -420,12 +425,13 @@ namespace TinyFSLib
                 {
                     throw new InvalidOperationException("File table is full");
                 }
-                data = new FileData(name, fileData, FileFlags.None);
+                data = new FileData(name, fileData, forceCompression ? FileFlags.GZip : FileFlags.None);
                 filesystem.Add(data);
             }
             else
             {
                 data.Data = fileData;
+                data.IsCompressed |= forceCompression;
             }
             return data;
         }

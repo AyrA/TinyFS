@@ -214,9 +214,17 @@ namespace TinyFSLib
             {
                 throw new InvalidOperationException("Data is not set");
             }
-            if (Data.Length > ushort.MaxValue)
+            if (Compress(Data).Length > ushort.MaxValue)
             {
-                throw new InvalidOperationException("Data is too long");
+                if (!IsCompressed)
+                {
+                    if (Compression.Compress(Data).Length <= ushort.MaxValue)
+                    {
+                        throw new InvalidOperationException("Data is too long for TinyFS but a compression test has shown that enabling compression would make the data fit.");
+                    }
+                    throw new InvalidOperationException("Data is too long for TinyFS");
+                }
+                throw new InvalidOperationException("Data is too long for TinyFS");
             }
             if (string.IsNullOrEmpty(Name))
             {
