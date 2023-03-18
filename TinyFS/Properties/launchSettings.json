@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TinyFS": {
+      "commandName": "Project",
+      "commandLineArgs": "/A /T C:\\temp\\tiny.fs /F bzkg.bf /C C:\\temp\\bzkg.bf"
+    }
+  }
+}

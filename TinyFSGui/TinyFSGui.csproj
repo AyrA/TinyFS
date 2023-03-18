@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Company>AyrA</Company>
+    <Copyright>© 2023 Kevin Gut</Copyright>
+    <Description>A manager application for TinyFS container files.</Description>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Product>TinyFSGui</Product>
+    <AssemblyTitle>TinyFS Gui Application</AssemblyTitle>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TinyFsLib\TinyFSLib.csproj" />
+  </ItemGroup>
+
+</Project>
