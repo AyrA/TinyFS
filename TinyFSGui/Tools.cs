@@ -72,5 +72,30 @@
             } while (File.Exists(finalName));
             return finalName;
         }
+
+        public static string GetUniqueName(string fileName, string[] existingNames)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                throw new ArgumentException($"'{nameof(fileName)}' cannot be null or empty.", nameof(fileName));
+            }
+            if (existingNames == null || existingNames.Length == 0)
+            {
+                return fileName;
+            }
+            if (!existingNames.Any(m => m.ToUpper() == fileName.ToUpper()))
+            {
+                return fileName;
+            }
+            var name = Path.GetFileNameWithoutExtension(fileName);
+            var ext = Path.GetExtension(fileName);
+            int i = 1;
+            string finalName;
+            do
+            {
+                finalName = $"{name} ({i++}){ext}";
+            } while (existingNames.Any(m => m.ToUpper() == finalName.ToUpper()));
+            return finalName;
+        }
     }
 }

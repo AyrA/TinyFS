@@ -239,10 +239,20 @@ namespace TinyFSGui
                 var names = indexes.Select(m => LvContents.Items[m].Text).ToArray();
                 foreach (var name in names)
                 {
-                    hasChanges = true;
-                    currentFile.DeleteFile(name);
+                    try
+                    {
+                        currentFile.DeleteFile(name);
+                        hasChanges = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Tools.BoxErr($"Cannot delete '{name}'. {ex.Message}");
+                    }
                 }
-                PopulateList(false);
+                if (hasChanges)
+                {
+                    PopulateList(false);
+                }
             }
         }
 
@@ -304,6 +314,50 @@ namespace TinyFSGui
             }
         }
 
+        private void AddFromClipboard()
+        {
+            if (currentFile == null)
+            {
+                return;
+            }
+            if (Clipboard.ContainsText())
+            {
+                var name = Tools.GetUniqueName("clipboard.txt", currentFile.Names);
+                currentFile.SetFile(name, Encoding.UTF8.GetBytes(Clipboard.GetText()));
+                hasChanges = true;
+                PopulateList(false);
+                var item = LvContents.Items.OfType<ListViewItem>().First(m => m.Text == name);
+                if (item != null)
+                {
+                    LvContents.Select();
+                    LvContents.Focus();
+                    item.Selected = true;
+                    item.Focused = true;
+                    item.BeginEdit();
+                }
+            }
+            else if (Clipboard.ContainsFileDropList())
+            {
+                var added = false;
+                foreach (var f in Clipboard.GetFileDropList())
+                {
+                    if (string.IsNullOrEmpty(f) || !File.Exists(f))
+                    {
+                        continue;
+                    }
+                    added |= AddFileByName(f);
+                }
+                if (added)
+                {
+                    PopulateList(false);
+                }
+            }
+            else
+            {
+                Tools.BoxWarn("To past contents, the clipboard must either contain a file list or text");
+            }
+        }
+
         private void SetCompressionOfSelectedFiles(bool compress)
         {
             if (currentFile == null)
@@ -345,20 +399,19 @@ namespace TinyFSGui
             }
         }
 
-        private bool AddFile(string fullName)
+        private bool AddFileByName(string fullName)
         {
-            if (currentFile == null) { return false; }
-            var name = Path.GetFileName(fullName);
-            if (currentFile.HasFile(name))
+            if (currentFile == null)
             {
-                Tools.BoxWarn($"A file with the name '{name}' already exists and will not be added");
                 return false;
             }
+            var name = Path.GetFileName(fullName);
+            var tinyName = Tools.GetUniqueName(name, currentFile.Names);
             try
             {
                 using var fs = File.OpenRead(fullName);
                 var data = Compression.CompressTiny(fs);
-                currentFile.SetFile(name, Compression.Decompress(data));
+                currentFile.SetFile(tinyName, Compression.Decompress(data));
                 hasChanges = true;
                 return true;
             }
@@ -369,7 +422,7 @@ namespace TinyFSGui
             return false;
         }
 
-        private void AddFile()
+        private void AddFileFromFileSystem()
         {
             var added = false;
             var types = OFD.Filter;
@@ -381,7 +434,7 @@ namespace TinyFSGui
                 {
                     foreach (var f in OFD.FileNames)
                     {
-                        added |= AddFile(f);
+                        added |= AddFileByName(f);
                     }
                 }
             }
@@ -472,7 +525,7 @@ namespace TinyFSGui
                 {
                     if (File.Exists(filename))
                     {
-                        added |= AddFile(filename);
+                        added |= AddFileByName(filename);
                     }
                 }
                 if (added)
@@ -614,7 +667,7 @@ namespace TinyFSGui
                     break;
                 case Keys.Insert:
                     e.Handled = e.SuppressKeyPress = true;
-                    AddFile();
+                    AddFileFromFileSystem();
                     break;
                 case Keys.Delete:
                     e.Handled = e.SuppressKeyPress = true;
@@ -633,6 +686,13 @@ namespace TinyFSGui
                     else
                     {
                         SetCompressionOfSelectedFiles(!EnableCompressionToolStripMenuItem.Checked);
+                    }
+                    break;
+                case Keys.V:
+                    if (e.Control)
+                    {
+                        e.Handled = e.SuppressKeyPress = true;
+                        AddFromClipboard();
                     }
                     break;
                 default:
@@ -762,7 +822,7 @@ namespace TinyFSGui
 
         private void AddFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AddFile();
+            AddFileFromFileSystem();
         }
 
         private void SetEncryptionToolStripMenuItem_Click(object sender, EventArgs e)
