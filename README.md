@@ -1,4 +1,3 @@
-
 # TinyFS
 
 This is a library and tool to bundle multiple files together into a small file system.
@@ -6,6 +5,9 @@ It's intended for systems with severe size constraints,
 and as such comes with various limitations.
 
 If sizes are not a problem for you, using a zip file is likely the better option.
+
+For documentation about the Gui,
+head over to [TinyFS help](https://help.ayra.ch/tinyfs)
 
 ## Features
 
