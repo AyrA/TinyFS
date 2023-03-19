@@ -209,6 +209,8 @@ namespace TinyFsTest
             TestContext.Out.WriteLine("File size is {0} bytes", result.Length);
             //Should be able to load it again
             _ = new FS(result);
+            //Can use this for UI integration tests
+            File.WriteAllBytes("C:\\temp\\max.tfs", result);
             Assert.Pass();
         }
 
