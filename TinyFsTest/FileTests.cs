@@ -25,7 +25,7 @@ namespace TinyFsTest
             var data = Utils.GetPredictableRandomData(ushort.MaxValue);
             fs.SetFile("test", data);
             Assert.That(fs.GetFile("test").Data, Is.EquivalentTo(data));
-            Assert.Throws<ArgumentOutOfRangeException>(() => fs.SetFile("test", new byte[ushort.MaxValue + 1]));
+            Assert.Throws<InvalidOperationException>(() => fs.SetFile("test", new byte[ushort.MaxValue + 1]));
         }
 
         [Test]
