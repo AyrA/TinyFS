@@ -53,58 +53,66 @@ namespace TinyFSGui
             {
                 return;
             }
-            foreach (var name in currentFile.Names)
+            LvContents.BeginUpdate();
+            try
             {
-                var file = currentFile[name];
-                var item = LvContents.Items.Add(file.Name);
-                var sizeItem = item.SubItems.Add(Tools.FormatSize(file.Data.Length));
-                if (file.Flags.HasFlag(FileFlags.GZip))
+                foreach (var name in currentFile.Names)
                 {
-                    var compressed = file.Data.Length - Compression.GetCompressionGain(file.Data);
-                    sizeItem.Text += string.Format(" ({0} compressed)", Tools.FormatSize(compressed));
-                }
-                if (file.Flags != FileFlags.None)
-                {
-                    var flags = new List<string>();
-                    foreach (var flag in Enum.GetValues<FileFlags>())
+                    var file = currentFile[name];
+                    var item = LvContents.Items.Add(file.Name);
+                    var sizeItem = item.SubItems.Add(Tools.FormatSize(file.Data.Length));
+                    if (file.Flags.HasFlag(FileFlags.GZip))
                     {
-                        if (flag != FileFlags.None && file.Flags.HasFlag(flag))
-                        {
-                            flags.Add(flag.ToString());
-                        }
+                        var compressed = file.Data.Length - Compression.GetCompressionGain(file.Data);
+                        sizeItem.Text += string.Format(" ({0} compressed)", Tools.FormatSize(compressed));
                     }
-                    item.SubItems.Add(string.Join(", ", flags));
+                    if (file.Flags != FileFlags.None)
+                    {
+                        var flags = new List<string>();
+                        foreach (var flag in Enum.GetValues<FileFlags>())
+                        {
+                            if (flag != FileFlags.None && file.Flags.HasFlag(flag))
+                            {
+                                flags.Add(flag.ToString());
+                            }
+                        }
+                        item.SubItems.Add(string.Join(", ", flags));
+                    }
+                    else
+                    {
+                        item.SubItems.Add("Normal");
+                    }
+                    var preview = file.Data
+                        .Take(30)
+                        .Select(m => m >= 0x20 ? m : (byte)'.')
+                        .ToArray();
+                    item.SubItems.Add(Encoding.UTF8.GetString(preview));
+                    if (focused != null && focused == item.Text)
+                    {
+                        item.Focused = true;
+                    }
                 }
-                else
+                if (reselect)
                 {
-                    item.SubItems.Add("Normal");
+                    foreach (var i in indexes.Where(m => m < LvContents.Items.Count))
+                    {
+                        LvContents.Items[i].Selected = true;
+                    }
                 }
-                var preview = file.Data
-                    .Take(30)
-                    .Select(m => m >= 0x20 ? m : (byte)'.')
-                    .ToArray();
-                item.SubItems.Add(Encoding.UTF8.GetString(preview));
-                if (focused != null && focused == item.Text)
+                LvContents.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+                //Do not shrink columns beyond their initial size
+                for (var i = 0; i < LvContents.Columns.Count; i++)
                 {
-                    item.Focused = true;
+                    var column = LvContents.Columns[i];
+                    if (column.Width < initialColumnSizes[i])
+                    {
+                        column.Width = initialColumnSizes[i];
+                    }
                 }
             }
-            if (reselect)
+            finally
             {
-                foreach (var i in indexes.Where(m => m < LvContents.Items.Count))
-                {
-                    LvContents.Items[i].Selected = true;
-                }
-            }
-            LvContents.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-            //Do not shrink columns beyond their initial size
-            for (var i = 0; i < LvContents.Columns.Count; i++)
-            {
-                var column = LvContents.Columns[i];
-                if (column.Width < initialColumnSizes[i])
-                {
-                    column.Width = initialColumnSizes[i];
-                }
+                LvContents.EndUpdate();
             }
         }
 
