@@ -1,5 +1,8 @@
 namespace TinyFsTest
 {
+    /// <summary>
+    /// TinyFS container tests
+    /// </summary>
     public class FileTests
     {
         /// <summary>
