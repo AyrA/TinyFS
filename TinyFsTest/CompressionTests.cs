@@ -1,7 +1,13 @@
 ﻿namespace TinyFsTest
 {
+    /// <summary>
+    /// Generic compression algorithm tests
+    /// </summary>
     public class CompressionTests
     {
+        /// <summary>
+        /// Test compression with increasing byte array size until size reduction is achieved
+        /// </summary>
         [Test]
         public void TestCompression()
         {
@@ -19,6 +25,9 @@
             Assert.Pass();
         }
 
+        /// <summary>
+        /// Test Decompress(Compress(Data))
+        /// </summary>
         [Test]
         public void TestDecompression()
         {
