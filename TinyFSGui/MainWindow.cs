@@ -828,6 +828,18 @@ namespace TinyFSGui
             }
         }
 
+        private void MainWindow_ResizeBegin(object sender, EventArgs e)
+        {
+            LvContents.OwnerDraw = true;
+            LvContents.SuspendLayout();
+        }
+
+        private void MainWindow_ResizeEnd(object sender, EventArgs e)
+        {
+            LvContents.OwnerDraw = false;
+            LvContents.ResumeLayout();
+        }
+
         private void AddFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddFileFromFileSystem();

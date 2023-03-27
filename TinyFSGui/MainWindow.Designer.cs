@@ -176,7 +176,7 @@
             // OpenWebsiteToolStripMenuItem
             // 
             OpenWebsiteToolStripMenuItem.Name = "OpenWebsiteToolStripMenuItem";
-            OpenWebsiteToolStripMenuItem.Size = new Size(180, 22);
+            OpenWebsiteToolStripMenuItem.Size = new Size(165, 22);
             OpenWebsiteToolStripMenuItem.Text = "&Open Website";
             OpenWebsiteToolStripMenuItem.Click += OpenWebsiteToolStripMenuItem_Click;
             // 
@@ -184,14 +184,14 @@
             // 
             DocumentationToolStripMenuItem.Name = "DocumentationToolStripMenuItem";
             DocumentationToolStripMenuItem.ShortcutKeys = Keys.F1;
-            DocumentationToolStripMenuItem.Size = new Size(180, 22);
+            DocumentationToolStripMenuItem.Size = new Size(165, 22);
             DocumentationToolStripMenuItem.Text = "&Documentation";
             DocumentationToolStripMenuItem.Click += DocumentationToolStripMenuItem_Click;
             // 
             // AboutToolStripMenuItem
             // 
             AboutToolStripMenuItem.Name = "AboutToolStripMenuItem";
-            AboutToolStripMenuItem.Size = new Size(180, 22);
+            AboutToolStripMenuItem.Size = new Size(165, 22);
             AboutToolStripMenuItem.Text = "&About";
             AboutToolStripMenuItem.Click += AboutToolStripMenuItem_Click;
             // 
@@ -286,6 +286,8 @@
             Text = "TinyFS Manager";
             FormClosing += MainWindow_FormClosing;
             FormClosed += MainWindow_FormClosed;
+            ResizeBegin += MainWindow_ResizeBegin;
+            ResizeEnd += MainWindow_ResizeEnd;
             MainMenu.ResumeLayout(false);
             MainMenu.PerformLayout();
             CmsList.ResumeLayout(false);
