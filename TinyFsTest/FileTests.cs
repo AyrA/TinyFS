@@ -2,6 +2,9 @@ namespace TinyFsTest
 {
     public class FileTests
     {
+        /// <summary>
+        /// Create a blank TinyFS file
+        /// </summary>
         [Test]
         public void NewTinyFsFile()
         {
@@ -9,6 +12,9 @@ namespace TinyFsTest
             Assert.Pass();
         }
 
+        /// <summary>
+        /// Add a file to a TinyFS container
+        /// </summary>
         [Test]
         public void AddExistingFile()
         {
@@ -18,6 +24,9 @@ namespace TinyFsTest
             Assert.That(fs.GetFile("test").Data, Is.EquivalentTo(data));
         }
 
+        /// <summary>
+        /// Ensure that a <see cref="ushort.MaxValue"/> length file fits
+        /// </summary>
         [Test]
         public void MaxFileSizeLimit()
         {
@@ -28,6 +37,9 @@ namespace TinyFsTest
             Assert.Throws<InvalidOperationException>(() => fs.SetFile("test", new byte[ushort.MaxValue + 1]));
         }
 
+        /// <summary>
+        /// Ensure that zero length files can be added and read
+        /// </summary>
         [Test]
         public void CanAddZeroByteFile()
         {
@@ -36,6 +48,9 @@ namespace TinyFsTest
             Assert.That(fs.GetFile("test").Data, Is.EquivalentTo(Array.Empty<byte>()));
         }
 
+        /// <summary>
+        /// Ensure that <see cref="byte.MaxValue"/> byte long file names work
+        /// </summary>
         [Test]
         public void CheckMaxNameLength()
         {
@@ -44,6 +59,9 @@ namespace TinyFsTest
             Assert.Throws<ArgumentOutOfRangeException>(() => fs.SetFile(string.Empty.PadRight(byte.MaxValue + 1, 'a'), new byte[1]));
         }
 
+        /// <summary>
+        /// Test saving a container to byte array and stream
+        /// </summary>
         [Test]
         public void Save()
         {
@@ -55,6 +73,9 @@ namespace TinyFsTest
             Assert.That(tinyfs, Is.EquivalentTo(MS.ToArray()));
         }
 
+        /// <summary>
+        /// Test loading a container from byte array
+        /// </summary>
         [Test]
         public void Load()
         {
@@ -67,6 +88,9 @@ namespace TinyFsTest
             Assert.That(data1, Is.EquivalentTo(data2.Data));
         }
 
+        /// <summary>
+        /// Test overwriting of TinyFS files
+        /// </summary>
         [Test]
         public void Overwrite()
         {
@@ -78,6 +102,9 @@ namespace TinyFsTest
             Assert.That(fs.GetFile("test").Data, Is.EquivalentTo(data2));
         }
 
+        /// <summary>
+        /// Save a compressed container
+        /// </summary>
         [Test]
         public void CompressionSave()
         {
@@ -91,6 +118,9 @@ namespace TinyFsTest
             Assert.That(serialized, Has.Length.LessThan(data.Length));
         }
 
+        /// <summary>
+        /// Load a compressed container
+        /// </summary>
         [Test]
         public void CompressionLoad()
         {
@@ -112,6 +142,9 @@ namespace TinyFsTest
             });
         }
 
+        /// <summary>
+        /// Encrypt a conainer using a key
+        /// </summary>
         [Test]
         public void EncryptedSaveWithKey()
         {
@@ -125,6 +158,9 @@ namespace TinyFsTest
             fs.Write(MS, key);
         }
 
+        /// <summary>
+        /// Load a container encrypted with a key
+        /// </summary>
         [Test]
         public void EncryptedLoadWithKey()
         {
@@ -140,6 +176,9 @@ namespace TinyFsTest
             fs = new(MS, key);
         }
 
+        /// <summary>
+        /// Encrypt a container with a password
+        /// </summary>
         [Test]
         public void EncryptedSaveWithPassword()
         {
@@ -152,6 +191,9 @@ namespace TinyFsTest
             fs.Write(MS, "Password.1");
         }
 
+        /// <summary>
+        /// Load a container encrypted with a password
+        /// </summary>
         [Test]
         public void EncryptedLoadWithPassword()
         {
@@ -166,6 +208,9 @@ namespace TinyFsTest
             fs = new(MS, "Password.1");
         }
 
+        /// <summary>
+        /// Ensure wrong keys do not work
+        /// </summary>
         [Test]
         public void EncryptedWrongKey()
         {
@@ -182,6 +227,9 @@ namespace TinyFsTest
             Assert.Throws<ArgumentException>(() => fs = new(MS, key));
         }
 
+        /// <summary>
+        /// Ensure wrong passwords do not work
+        /// </summary>
         [Test]
         public void EncryptedWrongPassword()
         {
@@ -196,6 +244,9 @@ namespace TinyFsTest
             Assert.Throws<ArgumentException>(() => fs = new(MS, "Password.2"));
         }
 
+        /// <summary>
+        /// Create a container of maximum possible size
+        /// </summary>
         [Test]
         public void MaxContainerSize()
         {
@@ -214,6 +265,9 @@ namespace TinyFsTest
             Assert.Pass();
         }
 
+        /// <summary>
+        /// Encrypt a container of maximum possible size
+        /// </summary>
         [Test]
         public void MaxContainerSizeEncrypted()
         {
