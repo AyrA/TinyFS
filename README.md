@@ -11,13 +11,14 @@ head over to [TinyFS help](https://help.ayra.ch/tinyfs)
 
 ## Features
 
-- Bundle any number of files together
+- Bundle multiple files together
 - Case insensitive file name option
 - Data compression option
 - AES Encryption option
 
 ## Limitations
 
+- Container holds at most 255 files
 - File names can be at most 255 bytes long
 - A single file can be at most 65535 bytes long
 - the FS is not designed to be written to
@@ -90,16 +91,23 @@ An entry consists of four values in this order:
 
 | Value       | Size | Description                     |
 |-------------|------|---------------------------------|
-| Flags       | 1    | Number of FS entries            |
-| Data size   | 2    | Repeated "Count" times          |
-| Name length | 1    | Length in bytes not characters  |
+| Flags       | 1    | Flags specific to this file     |
+| Data size   | 2    | Length of file data             |
+| Name length | 1    | Length in bytes, not characters |
 | Name        | ??   | Size specified by "Name length" |
 
+The name is not terminated in any way.
+If your language requires string termination you must add it yourself,
+and thus also reserve the extra memory required for it (in C, usually one extra byte)
+
 The data length always specifies the number of bytes that must be read from the underlying stream.
+This means that for compressed files, this number will be the compressed length.
+
 The TinyFSLib.FileData instances always present the data in its real form,
 that is with all encodings processed.
 In simple terms this means the library accepts new data as-is and presents it identically again later.
-It transparently does all encoding/decoding in the background.
+It transparently does all encoding and compression in the background,
+similar to how real file systems compress files.
 
 The flags can consist of the values below
 
@@ -144,7 +152,35 @@ Those bytes contain the index and data portions of the container once decrypted.
 To conserve size, the integer specifying the encrypted size is given using a 7-bit encoding scheme.
 This means the size is stored 7 bits at a time in the lowest 7 bits of a byte.
 The highest bit in the byte is used to indicate whether an additional byte has to be read for the full integer.
-The integer is 32 bits, meaning up to at most 5 bytes will be needed to store the value.
+The integer is 32 bits, meaning up to at most 5 bytes will be needed to store the value,
+however, due to the container size limitations (see further below), 4 bytes is guaranteed to be enough.
+
+## Encryption format
+
+The encrypted data is the concatenation of three or four values
+
+| Value       | Size | Description                     |
+|-------------|------|---------------------------------|
+| Salt        | 16   | Salt for the password function  |
+| Nonce       | 12   | AES-GCM nonce                   |
+| Tag         | 16   | AES-GCM tag                     |
+| Data        | ??   | AES-GCM encrypted data          |
+
+Note: The salt is only present if the TinyFS container was encrypted using a password instead of a key.
+There is however no way of detecting this,
+and the user has to remember his choice from when he encrypted the file.
+
+## Password based key derivation
+
+PBKDF2 is chosen as the password based key derivation function.
+The salt is a randomly generated 16 byte sequence that's added in front of the encrypted data blob
+(see table above for details)
+
+Other parameters in use but not stored
+
+- Hashing function: SHA-256
+- Iterations: 100'000
+- Derived key size: 32 bytes
 
 ## Container Size
 
@@ -152,3 +188,6 @@ Due to the various size limitations, a TinyFS container can at most be this big:
 
 - Unencrypted: 16'777'476 bytes (16.7 MB)
 - Encrypted: 16'777'524 bytes (16.7 MB)
+
+The size is given by having 255 maximum size index entries with 255 maximum size data entries
+plus the basic TinyFS header of 6 bytes: $6 + 255 * 259 + 255 * 65535 = 16777476$
