@@ -1,19 +1,31 @@
 ﻿namespace TinyFsTest
 {
+    /// <summary>
+    /// Generic AES tests
+    /// </summary>
     public class AesTest
     {
+        /// <summary>
+        /// Encrypt with a key
+        /// </summary>
         [Test]
         public void EncryptWithKey()
         {
             AES.Encrypt(new byte[ushort.MaxValue], Utils.GetPredictableRandomData(32));
         }
 
+        /// <summary>
+        /// Encrypt with a password
+        /// </summary>
         [Test]
         public void EncryptWithPassword()
         {
             AES.Encrypt(new byte[ushort.MaxValue], "test");
         }
 
+        /// <summary>
+        /// Decrypt with a key
+        /// </summary>
         [Test]
         public void DecryptWithKey()
         {
@@ -23,6 +35,9 @@
             Assert.That(AES.Decrypt(enc, key), Is.EquivalentTo(data));
         }
 
+        /// <summary>
+        /// Decrypt with a password
+        /// </summary>
         [Test]
         public void DecryptWithPassword()
         {
